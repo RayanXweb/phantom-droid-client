@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState, ReactNode } from 'react';
 import { socketClient } from '../api/socket';
-import { useAuth } from './useAuth';
+import { useAuth } from '../hooks/useAuth';
 
 interface SocketContextType {
   isConnected: boolean;
@@ -10,9 +10,13 @@ interface SocketContextType {
   off: (event: string, callback?: (...args: any[]) => void) => void;
 }
 
-const SocketContext = createContext<SocketContextType | undefined>(undefined);
+export const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
-export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface SocketProviderProps {
+  children: ReactNode;
+}
+
+export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const { token, isAuthenticated } = useAuth();
   const [isConnected, setIsConnected] = useState(false);
 
@@ -65,12 +69,4 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       {children}
     </SocketContext.Provider>
   );
-};
-
-export const useSocket = () => {
-  const context = useContext(SocketContext);
-  if (context === undefined) {
-    throw new Error('useSocket must be used within a SocketProvider');
-  }
-  return context;
 };
